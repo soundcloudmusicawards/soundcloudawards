@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2025 by anonymous (http://jsbin.com/kojugisusi/2/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SoundCloud Awards 2025 - Vote Now</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #ff5500 0%, #ffbb33 100%);
+    color: #222;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  h1, h2 {
+    text-align: center;
+    color: white;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  h1 { margin-bottom: 40px; }
+  .category {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .category h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #ff5500;
+    letter-spacing: 1px;
+  }
+  .nominee {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 12px 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .nominee span.name {
+    flex: 1;
+    user-select: none;
+  }
+  button.vote-btn {
+    background: #ff5500;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 18px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(255, 85, 0, 0.4);
+  }
+  button.vote-btn:hover:not(:disabled) {
+    background-color: #e04800;
+  }
+  button.vote-btn:disabled {
+    cursor: default;
+    background-color: #ddd;
+    box-shadow: none;
+    color: #999;
+  }
+  .voted-msg {
+    color: green;
+    font-weight: 700;
+    margin-left: 15px;
+    user-select: none;
+  }
+  .vote-bar {
+    position: relative;
+    width: 35%;
+    height: 18px;
+    background-color: #eee;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-left: 20px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .vote-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff5500, #ffbb33);
+    width: 0%;
+    border-radius: 15px 0 0 15px;
+    transition: width 1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    user-select: none;
+  }
+  /* Email form styles */
+  #email-form {
+    max-width: 400px;
+    margin: 50px auto;
+    background: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  }
+  #email-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #ff5500;
+  }
+  #email-form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1.5px solid #ff5500;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+  #email-form button {
+    width: 100%;
+    padding: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    background-color: #ff5500;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(255, 85, 0, 0.4);
+    transition: background-color 0.3s ease;
+  }
+  #email-form button:hover {
+    background-color: #e04800;
+  }
+  #email-error {
+    color: #c0392b;
+    font-weight: 700;
+    margin-bottom: 15px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<h1>SoundCloud Awards 2025 - Vote Now</h1>
+
+<div id="email-form" style="display:none;">
+  <form id="form-email">
+    <label for="email-input">Enter your email to vote:</label>
+    <input type="email" id="email-input" placeholder="your.email@example.com" required />
+    <div id="email-error">Please enter a valid email address.</div>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div id="categories" style="display:none;"></div>
+
+<script>
+const categories = [
+  {
+    id: "artist_of_the_year",
+    title: "Artist of the Year",
+    nominees: [
+      "Izraella Jolie",
+      "PinkPantheress",
+      "$uicideboy$",
+      "Baby Keem",
+      "Ice Spice"
+    ]
+  },
+  {
+    id: "best_emerging_artist",
+    title: "Best Emerging Artist",
+    nominees: [
+      "Izraella Jolie",
+      "PinkPantheress",
+      "Baby Keem",
+      "Ice Spice",
+      "Flo Milli"
+    ]
+  },
+  {
+    id: "best_pop_track",
+    title: "Best Pop Track",
+    nominees: [
+      "Izraella Jolie — Silver Skies",
+      "PinkPantheress — Just For Me",
+      "Salem Ilese — Mad at Disney",
+      "mxmtoon — Prom Dress",
+      "Clairo — Bags"
+    ]
+  },
+  {
+    id: "best_hiphop_track",
+    title: "Best Hip-Hop Track",
+    nominees: [
+      "Baby Keem — Orange Soda",
+      "Ice Spice — Munch (Feelin’ U)",
+      "Ski Mask The Slump God — Catch Me Outside",
+      "YBN Nahmir — Rubbin Off The Paint",
+      "Juice WRLD — Lucid Dreams"
+    ]
+  },
+  {
+    id: "best_rap_album",
+    title: "Best Rap Album",
+    nominees: [
+      "$uicideboy$ — I Want To Die In New Orleans",
+      "Juice WRLD — Goodbye & Good Riddance",
+      "Lil Peep — Come Over When You’re Sober, Pt. 1",
+      "Bones — SurrenderYourself",
+      "Ski Mask The Slump God — Stokeley"
+    ]
+  },
+  {
+    id: "best_rnb_track",
+    title: "Best R&B Track",
+    nominees: [
+      "Summer Walker — Playing Games",
+      "Brent Faiyaz — Rehab (Winter in Paris)",
+      "Lucky Daye — Roll Some Mo",
+      "Giveon — Heartbreak Anniversary",
+      "SZA — Good Days"
+    ]
+  },
+  {
+    id: "best_rock_alternative_track",
+    title: "Best Rock / Alternative Track",
+    nominees: [
+      "Yungblud — Parents",
+      "Machine Gun Kelly — Bloody Valentine",
+      "Nothing But Thieves — Amsterdam",
+      "Wallows — Are You Bored Yet?",
+      "Arctic Monkeys — Do I Wanna Know?"
+    ]
+  },
+  {
+    id: "best_electronic_track",
+    title: "Best Electronic Track",
+    nominees: [
+      "Flume — Never Be Like You",
+      "Porter Robinson — Shelter",
+      "Marshmello — Alone",
+      "Madeon — Icarus",
+      "ODESZA — Line Of Sight"
+    ]
+  },
+  {
+    id: "best_remix",
+    title: "Best Remix",
+    nominees: [
+      "PinkPantheress (Remix)",
+      "Flume — Say It (Remix)",
+      "Kaytranada — Leave Me Alone (Remix)",
+      "Izraella Jolie (Remix)",
+      "SG Lewis — Chemicals (Remix)"
+    ]
+  },
+  {
+    id: "best_collaboration",
+    title: "Best Collaboration",
+    nominees: [
+      "Izraella Jolie & Wifisfuneral",
+      "$uicideboy$ & Pouya",
+      "Ski Mask The Slump God & Lil Peep",
+      "Bones & Scarlxrd",
+      "PinkPantheress & Aries"
+    ]
+  },
+  {
+    id: "most_streamed_track",
+    title: "Most Streamed Track",
+    nominees: [
+      "Juice WRLD — Lucid Dreams",
+      "Lil Peep — Falling Down",
+      "Izraella Jolie — Silver Skies",
+      "PinkPantheress — Just For Me",
+      "Ski Mask The Slump God — Catch Me Outside"
+    ]
+  },
+  {
+    id: "audience_choice",
+    title: "Audience Choice Award",
+    nominees: [
+      "Izraella Jolie",
+      "PinkPantheress",
+      "$uicideboy$",
+      "Baby Keem",
+      "Ice Spice"
+    ]
+  },
+  {
+    id: "innovation_in_sound",
+    title: "Innovation in Sound",
+    nominees: [
+      "Izraella Jolie",
+      "PinkPantheress",
+      "SOPHIE (hommage posthume)",
+      "Yung Lean",
+      "Kaytranada"
+    ]
+  }
+];
+
+const VOTE_INCREMENT = 0.1;
+
+function getVotes() {
+  const votesRaw = localStorage.getItem("scaVotes");
+  if (votesRaw) return JSON.parse(votesRaw);
+  const initVotes = {};
+  categories.forEach(cat => {
+    initVotes[cat.id] = {};
+    cat.nominees.forEach(n => initVotes[cat.id][n] = 0);
+  });
+  return initVotes;
+}
+
+function saveVotes(votes) {
+  localStorage.setItem("scaVotes", JSON.stringify(votes));
+}
+
+function getUserVotes() {
+  const raw = localStorage.getItem("scaUserVotes");
+  return raw ? JSON.parse(raw) : {};
+}
+
+function saveUserVotes(userVotes) {
+  localStorage.setItem("scaUserVotes", JSON.stringify(userVotes));
+}
+
+function animateCount(el, start, end, duration = 800) {
+  const range = end - start;
+  let startTime = null;
+
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const value = start + range * progress;
+    el.textContent = value.toFixed(1) + '%';
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function renderCategory(cat, votes, userVotes) {
+  const container = document.createElement("div");
+  container.className = "category";
+  container.innerHTML = `<h2>${cat.title}</h2>`;
+
+  cat.nominees.forEach(nominee => {
+    const voteCount = votes[cat.id][nominee];
+    const percent = voteCount * VOTE_INCREMENT;
+
+    const nomineeDiv = document.createElement("div");
+    nomineeDiv.className = "nominee";
+
+    const userHasVoted = userVotes[cat.id] !== undefined;
+
+    nomineeDiv.innerHTML = `
+      <span class="name">${nominee}</span>
+      ${userHasVoted
+        ? (userVotes[cat.id] === nominee
+          ? `<span class="voted-msg">You voted here</span>`
+          : `<span style="opacity:0.5; user-select:none;">Vote locked</span>`)
+        : `<button class="vote-btn" data-cat="${cat.id}" data-nominee="${nominee}">Vote</button>`
+      }
+      <div class="vote-bar" aria-label="Vote percentage">
+        <div class="vote-fill" style="width: 0%;">0%</div>
+      </div>
+    `;
+
+    container.appendChild(nomineeDiv);
+  });
+
+  return container;
+}
+
+function renderAll() {
+  const votes = getVotes();
+  const userVotes = getUserVotes();
+
+  const main = document.getElementById("categories");
+  main.innerHTML = "";
+
+  categories.forEach(cat => {
+    const catElem = renderCategory(cat, votes, userVotes);
+    main.appendChild(catElem);
+  });
+
+  document.querySelectorAll(".nominee").forEach(nomineeDiv => {
+    const fill = nomineeDiv.querySelector(".vote-fill");
+    if (!fill) return;
+    const catId = nomineeDiv.closest(".category").querySelector("h2").textContent;
+    const catObj = categories.find(c => c.title === catId);
+    const name = nomineeDiv.querySelector(".name").textContent;
+
+    const votesCount = votes[catObj.id][name];
+    const targetPercent = votesCount * VOTE_INCREMENT;
+
+    animateCount(fill, 0, targetPercent);
+    setTimeout(() => {
+      fill.style.width = `${targetPercent}%`;
+    }, 20);
+  });
+
+  document.querySelectorAll("button.vote-btn").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const catId = btn.getAttribute("data-cat");
+      const nominee = btn.getAttribute("data-nominee");
+      const votes = getVotes();
+      const userVotes = getUserVotes();
+
+      if(userVotes[catId]) {
+        alert("You have already voted in this category.");
+        return;
+      }
+
+      votes[catId][nominee]++;
+      saveVotes(votes);
+
+      userVotes[catId] = nominee;
+      saveUserVotes(userVotes);
+
+      renderAll();
+    });
+  });
+}
+
+function validateEmail(email) {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+function showVoting() {
+  document.getElementById("email-form").style.display = "none";
+  document.getElementById("categories").style.display = "block";
+  renderAll();
+}
+
+function showEmailForm() {
+  document.getElementById("email-form").style.display = "block";
+  document.getElementById("categories").style.display = "none";
+}
+
+window.onload = () => {
+  const email = localStorage.getItem("scaUserEmail");
+  if (email && validateEmail(email)) {
+    showVoting();
+  } else {
+    showEmailForm();
+  }
+
+  const form = document.getElementById("form-email");
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const input = document.getElementById("email-input");
+    const emailVal = input.value.trim();
+
+    if (!validateEmail(emailVal)) {
+      document.getElementById("email-error").style.display = "block";
+      return;
+    }
+    document.getElementById("email-error").style.display = "none";
+    localStorage.setItem("scaUserEmail", emailVal);
+    showVoting();
+  });
+};
+<!-- Partie du script modifiée -->
+
+document.querySelectorAll("button.vote-btn").forEach(btn => {
+  btn.addEventListener("click", e => {
+    const catId = btn.getAttribute("data-cat");
+    const nominee = btn.getAttribute("data-nominee");
+    const votes = getVotes();
+    const userVotes = getUserVotes();
+
+    if(userVotes[catId]) {
+      alert("You have already voted in this category.");
+      return;
+    }
+
+    votes[catId][nominee]++;
+    saveVotes(votes);
+
+    userVotes[catId] = nominee;
+    saveUserVotes(userVotes);
+
+    // Afficher le message de remerciement à côté du bouton cliqué
+    const parent = btn.parentElement;
+    btn.remove(); // Supprime le bouton
+    const thanksMsg = document.createElement("span");
+    thanksMsg.textContent = "Thank you, we'll meet on August 15 to see the results.";
+    thanksMsg.style.color = "green";
+    thanksMsg.style.fontWeight = "700";
+    thanksMsg.style.marginLeft = "15px";
+    thanksMsg.style.userSelect = "none";
+    parent.appendChild(thanksMsg);
+
+    // Mettre à jour les résultats animés
+    renderAll();
+  });
+});
+</script>
+
+</body>
+</html>
